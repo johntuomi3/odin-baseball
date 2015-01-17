@@ -4,11 +4,9 @@ import csv
 import psycopg2
 import pandas as pd
 import numpy as np
-from pandas.io import sql
-import psycopg2
+from sqlalchemy import create_engine
 
-
-conn = psycopg2.connect(database="mlb")
+engine = create_engine("postgresql://postgres:Portage2@localhost/mlb")
 
 def main():
     initialize()
@@ -33,8 +31,10 @@ def getCSVFiles():
 def parseCSV(csv_file_list):
     for csv_file_path in csv_file_list:
         table_name = str(csv_file_path.split("\\")[1]).replace('.csv', '')
+        csv_file = pd.DataFrame.from_csv(csv_file_path)
+        print(csv_file)
         print(table_name)
-        csv_file = pd.read_csv(csv_file_path)
+        csv_file.to_sql(table_name, engine,'postgresql',if_exists='replace')
         
 
         
