@@ -1,7 +1,4 @@
 import os
-import sys
-import csv
-from optparse import OptionParser
 from datetime import datetime
 import psycopg2
 import pandas as pd
@@ -9,25 +6,6 @@ import numpy as np
 from sqlalchemy import create_engine
 
 engine = create_engine("postgresql://postgres:Portage2@localhost/mlb")
-
-def main():
-    opts, args = parseOptions()
-    print(opts, args)
-    if opts.initialize == True:
-        initialize()
-    elif opts.opt_table != False:
-        getSQLTable(opts.opt_table)
-
-
-def parseOptions():
-    parser = OptionParser()
-    parser.add_option("-i", "--initialize", help="Initialize and Load Baseball Data", action="store_true",
-                      dest="initialize", default=False)
-    parser.add_option("-t", "--table", help="Return a table from the database as a pandas DataFrame", 
-                      action="store", dest="opt_table", default=False)
-    (opts, args) = parser.parse_args()
-    return opts, args
-
 
 def initialize():
     start_time = datetime.now()
@@ -38,7 +16,7 @@ def initialize():
     print("Start Time: %s" % start_time)
     print("End Time: %s" % end_time)
     print("Elapsed Time: %s" % initialization_time)
-
+    
 
 def getCSVFiles():
     csv_file_list = []
@@ -63,15 +41,3 @@ def getSQLTable(table):
     df_table = pd.read_sql_table(table,engine)
     print(df_table)
     return df_table
-
-    
-
-        
-        
-        
-        
-
-
-
-if __name__ == "__main__":
-    main()
