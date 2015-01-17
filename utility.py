@@ -34,7 +34,7 @@ def initialize():
     csv_file_list = getCSVFiles()
     parseCSV(csv_file_list)
     end_time = datetime.now()
-    initialization_time = (end_time - start_time).strftime("%H:%M:%S")
+    initialization_time = end_time - start_time
     print("Start Time: %s" % start_time)
     print("End Time: %s" % end_time)
     print("Elapsed Time: %s" % initialization_time)
