@@ -2,10 +2,13 @@ import os
 import sys
 import csv
 import psycopg2
-import pandas
-from sqlalchemy import create_engine
+import pandas as pd
+import numpy as np
+from pandas.io import sql
+import psycopg2
 
-engine = create_engine("postgresql://postgres:Portage2!@localhost/mlb")
+
+conn = psycopg2.connect(database="mlb")
 
 def main():
     initialize()
@@ -29,10 +32,15 @@ def getCSVFiles():
 
 def parseCSV(csv_file_list):
     for csv_file_path in csv_file_list:
-        csv_file = open(csv_file_path, 'r')
-        reader = csv.DictReader(csv_file)        
-        for i in reader:
-            print(i)
+        table_name = str(csv_file_path.split("\\")[1]).replace('.csv', '')
+        print(table_name)
+        csv_file = pd.read_csv(csv_file_path)
+        
+
+        
+        
+        
+        
 
 
 
