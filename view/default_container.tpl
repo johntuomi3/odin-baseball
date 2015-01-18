@@ -2,7 +2,7 @@
 	%include('view/nav.tpl')
     <!--Your site content starts-->
     <div class="container col-xs-12">
-        %include({{widget}})
+        %include('[widget]'.replace('[widget]',{{widget}}))
     </div>
     <!-- Your site ends -->
 %include('view/footer.tpl')
