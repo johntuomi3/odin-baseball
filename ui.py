@@ -116,12 +116,6 @@ class Table(object):
         self.data       = data
         
 
-
-
-
-    
-
-
 run(app,debug=True,host='192.168.0.6',port='8080')
 
 
