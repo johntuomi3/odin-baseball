@@ -2,7 +2,14 @@
 	%include('view/nav.tpl')
     <!--Your site content starts-->
     <div class="container col-xs-12">
-        %include('view/panel.tpl')
+		%if widget == 'panel':	
+			%include('view/panel.tpl')
+		%elif widget == 'table':
+			%include('view/table.tpl')
+		%end
     </div>
+	<noscript>
+		{{widget}}
+	</noscript>
     <!-- Your site ends -->
 %include('view/footer.tpl')
