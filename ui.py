@@ -3,11 +3,67 @@ from utility import *
 
 app = Bottle()
 
-
+# Routes
 @app.route('/')
 def index():
     panel = Panel('Odin is a Baseball Data Analysis Program Built on Python using Bottle and Bootstrap','Odin','info')
     return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
+
+
+@app.route('/players')
+@app.route('/players/')
+def players():
+    players = getSQLTable('Master')
+    table = Table(players.columns.values.tolist(), players.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.route('/players/active')
+@app.route('/players/active/')
+def players():
+    players = getSQLTable('Master')
+    table = Table(players.columns.values.tolist(), players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.route('/<teamID>/players/active/hitters')
+@app.route('/<teamID>/players/active/hitters/')
+def players(teamID):
+    players = getSQLTable('Master')
+    batters = getSQLTable('Batting')
+    roster = players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].merge(batters[batters["teamID"]==teamID], on='playerID')
+    table = Table(roster.columns.values.tolist(), roster.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.route('/<teamID>/players/active/hitters/<year:int>')
+@app.route('/<teamID>/players/active/hitters/<year:int>/')
+def players(teamID, year):
+    players = getSQLTable('Master')
+    batters = getSQLTable('Batting')
+    roster = players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].merge(batters[(batters["teamID"]==teamID) & (batters["yearID"]==year)], on='playerID')
+    table = Table(roster.columns.values.tolist(), roster.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data)
+
+
+@app.route('/<teamID>/players/active/pitchers')
+@app.route('/<teamID>/players/active/pitchers/')
+def players(teamID):
+    players = getSQLTable('Master')
+    pitchers = getSQLTable('Pitching')
+    roster = players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].merge(pitchers[pitchers["teamID"]==teamID], on='playerID')
+    table = Table(roster.columns.values.tolist(), roster.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.route('/<teamID>/players/active/pitchers/<year:int>')
+@app.route('/<teamID>/players/active/pitchers/<year:int>/')
+def players(teamID, year):
+    players = getSQLTable('Master')
+    pitchers = getSQLTable('Pitching')
+    roster = players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].merge(pitchers[(pitchers["teamID"]==teamID) & (pitchers["yearID"]==year)], on='playerID')
+    table = Table(roster.columns.values.tolist(), roster.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
 
 
 
@@ -44,8 +100,7 @@ def stylesheets(filename):
     return static_file(filename, root='static/css/')
 
 
-
-
+#Web UI Elements
 class Panel(object):
     def __init__(self, text, title, type):
         self.name       = 'panel'
