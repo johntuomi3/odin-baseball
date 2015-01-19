@@ -39,5 +39,4 @@ def parseCSV(csv_file_list):
 
 def getSQLTable(table):
     df_table = pd.read_sql_table(table,engine)
-    print(df_table)
     return df_table

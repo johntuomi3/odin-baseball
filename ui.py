@@ -10,22 +10,40 @@ def index():
     return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
 
 
-@app.route('/master')
-def master():
-    master = getSQLTable('Master')
-    print(master)
-    table = Table(['Name', 'Birthplace', 'Team'],['Test Player','New York', 'New York Yankees'])
-    return template('view/default_container', widget = table.name, fields = table.fields, values= table.data) 
+
+@app.route('/teams')
+@app.route('/teams/')
+def teams():
+    teams = getSQLTable('Teams')
+    table = Table(teams.columns.values.tolist(), teams.values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
 
 
-@app.route('/css/<filename>')
-def server_static(filename):
+@app.route('/teams/<franchID>')
+@app.route('/teams/<franchID>/')
+def teams(franchID):
+    teams = getSQLTable('Teams')
+    table = Table(teams.columns.values.tolist(), teams[teams["franchID"]==franchID].values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.route('/teams/<franchID>/<yearID>')
+@app.route('/teams/<franchID>/<yearID>/')
+def teams(franchID, yearID):
+    teams = getSQLTable('Teams')
+    table = Table(teams.columns.values.tolist(), teams[(teams["franchID"]==franchID) & (teams["yearID"]==yearID)].values)
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+
+
+@app.get('/static/js/<filename>')
+def javascripts(filename):
+    return static_file(filename, root='static/js/')
+
+@app.get('/static/css/<filename>')
+def stylesheets(filename):
     return static_file(filename, root='static/css/')
 
 
-@app.route('/js/<filename>')
-def server_static(filename):
-    return static_file(filename, root='static/js/')
 
 
 class Panel(object):
@@ -49,7 +67,7 @@ class Table(object):
     
 
 
-run(app,debug=True)
+run(app,debug=True,host='192.168.0.6',port='8080')
 
 
 
