@@ -91,6 +91,18 @@ def parseCSV(csv_file_list):
         csv_file = pd.DataFrame.from_csv(csv_file_path)
         print("Importing CSV to table: ",table_name)
         csv_file.to_sql(table_name, engine,'postgresql',if_exists='replace')
+
+
+def fixTeamTable():
+    cnxn = psycopg2.connect(database='odin_app',user="odin",host="localhost",password="admin")
+    cur = cnxn.cursor()
+    cur.execute("""
+                   ALTER TABLE "Teams"
+                   ALTER COLUMN "yearID" TYPE timestamp without time zone; 
+                """)
+    cnxn.commit()
+    cnxn.close()
+                  
         
 
 def getSQLTable(table):
