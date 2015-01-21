@@ -5,12 +5,15 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
+
 engine = create_engine("postgresql://odin:admin@localhost/odin_app")
+start_time = datetime.now()
 
 
 def initialize():
-    start_time = datetime.now()
+    print("""******** LOCATING LAHMAN CSV Files ********""")
     csv_file_list = getCSVFiles()
+    print("""******** EXTRACTING AND IMPORTING DATA FROM LAHMAN CSV Files ********""")
     parseCSV(csv_file_list)
     end_time = datetime.now()
     initialization_time = end_time - start_time
@@ -19,10 +22,29 @@ def initialize():
     print("Elapsed Time: %s" % initialization_time)
 
 
-def createSuperUser():
-    cnxn = psycopg2.connect(user="postgres", password="Portage2!")
+def createSuperUser(postgres_superuser, postgres_password):
+    print("******** DATABASE USER CREATION ********")
+    print("Postgres Superuser: %s \nPostgres Password: %s" %(postgres_superuser, postgres_password))
+
+    try:
+        cnxn = psycopg2.connect(user="%s" % (postgres_superuser), password="%s" % (postgres_password))
+    except psycopg2.OperationalError:
+        print("Invalid Postgres Username or Password")
+        exit()
     cur = cnxn.cursor()  
-    cur.execute("CREATE USER odin WITH SUPERUSER;")
+    cur.execute("""do
+                    $body$
+                    BEGIN
+                       IF NOT EXISTS (
+                          SELECT *
+                          FROM   pg_catalog.pg_user
+                          WHERE  usename = 'odin') THEN
+
+                          CREATE ROLE odin WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'admin';
+                       END IF;
+                    END
+                $body$;
+                """)
     cnxn.commit()
     cur.execute("ALTER USER odin WITH PASSWORD 'admin';")
     cnxn.commit()
@@ -30,16 +52,25 @@ def createSuperUser():
     cnxn.commit()  
     cnxn.close()
 
+
 def createDatabase():
-    cnxn2 = psycopg2.connect(user='odin', password='admin')
-    cur2 = cnxn.cursor()  
-    cur2.execute("""
-                    CREATE DATABASE odin_app
-                    OWNER odin;
-                """)
-    cnxn2.commit()
+    print("******** DATABASE CREATION ********")
+    cnxn2 = psycopg2.connect(database='postgres',user="odin",host="localhost",password="admin")
+    cnxn2.autocommit = True
+    cur2 = cnxn2.cursor()  
+    odin_existance = cur2.execute("""
+                                    SELECT datname
+                                    FROM   pg_catalog.pg_database
+                                    WHERE  datname = 'odin_app'                    
+                                  """)    
+    if odin_existance == "None":
+        cur2.execute("""
+                     CREATE DATABASE odin_app OWNER odin TEMPLATE template0;                          
+                     """)   
+        print("Odin Database Created Successfully") 
+    else:
+        print("Odin Database Already Exists")
     cnxn2.close()
-    
 
 
 def getCSVFiles():
@@ -50,6 +81,7 @@ def getCSVFiles():
                csv_file_path = os.path.join(dirs, file)
                if csv_file_path not in csv_file_list:
                    csv_file_list.append(csv_file_path)
+    print("Found %s CSV Files." % (len(csv_file_list)))
     return csv_file_list
 
 
