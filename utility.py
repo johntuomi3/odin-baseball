@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
-engine = create_engine("postgresql://postgres:Portage2@localhost/mlb")
+engine = create_engine("postgresql://odin:admin@localhost/odin_app")
+
 
 def initialize():
     start_time = datetime.now()
@@ -16,7 +17,30 @@ def initialize():
     print("Start Time: %s" % start_time)
     print("End Time: %s" % end_time)
     print("Elapsed Time: %s" % initialization_time)
+
+
+def createSuperUser():
+    cnxn = psycopg2.connect(user="postgres", password="Portage2!")
+    cur = cnxn.cursor()  
+    cur.execute("CREATE USER odin WITH SUPERUSER;")
+    cnxn.commit()
+    cur.execute("ALTER USER odin WITH PASSWORD 'admin';")
+    cnxn.commit()
+    cur.execute("ALTER ROLE odin CREATEDB CREATEROLE REPLICATION;")
+    cnxn.commit()  
+    cnxn.close()
+
+def createDatabase():
+    cnxn2 = psycopg2.connect(user='odin', password='admin')
+    cur2 = cnxn.cursor()  
+    cur2.execute("""
+                    CREATE DATABASE odin_app
+                    OWNER odin;
+                """)
+    cnxn2.commit()
+    cnxn2.close()
     
+
 
 def getCSVFiles():
     csv_file_list = []
