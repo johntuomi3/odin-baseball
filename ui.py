@@ -104,7 +104,19 @@ def playerLooseSearch(player_name):
         return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
         
     else:
-        return(str(hitting_career.values), str(pitching_career.values), str(fielding_career.values), str(outfielding_career.values))
+        hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
+        pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
+        fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
+        outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+
+        widgets_topleft = [hitting_table]
+        widgets_topmiddle = []
+        widgets_topright = [pitching_table]
+        widgets_bottomleft = [outfielding_table]
+        widgets_bottommiddle = []
+        widgets_bottomright = [fielding_table]
+        
+        return template('view/player_container', widgets_topleft=widgets_topleft, widgets_topmiddle=widgets_topmiddle, widgets_topright = widgets_topright, widgets_bottomleft = widgets_bottomleft, widgets_bottommiddle=widgets_bottommiddle, widgets_bottomright = widgets_bottomright)
 
 
 @app.route('/player/<player_name>/<playerID>')
