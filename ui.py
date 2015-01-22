@@ -63,8 +63,61 @@ def players(teamID, year):
     pitchers = getSQLTable('Pitching')
     roster = players[(players["finalGame"]>='2013') & (players["deathYear"].isnull()==True)].merge(pitchers[(pitchers["teamID"]==teamID) & (pitchers["yearID"]==year)], on='playerID')
     table = Table(roster.columns.values.tolist(), roster.values)
-    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data) 
+    return template('view/default_container', widget = table.name, fields = table.fields, data= table.data)
 
+
+@app.route('/player/<player_name>')
+@app.route('/player/<player_name>/')
+def playerLooseSearch(player_name):
+    player_first_name = str(player_name.split(' ')[0]).title()
+    player_last_name = str(player_name.split(' ')[1]).title()
+    print(player_first_name, player_last_name)
+    players = getSQLTable('Master')
+    pitchers = getSQLTable('Pitching')
+    batters = getSQLTable('Batting')
+    fielders = getSQLTable('Fielding')
+    outfielders = getSQLTable('FieldingOF')  
+    player = players[(players["nameFirst"]==player_first_name) & (players["nameLast"]==player_last_name)]
+    
+    hitting_career  = player.merge(batters, on="playerID")
+    pitching_career = player.merge(pitchers, on="playerID")
+    fielding_career = player.merge(fielders, on="playerID")
+    outfielding_career = player.merge(outfielders, on="playerID")
+    print(len(hitting_career), len(pitching_career))
+    if len(hitting_career) == 0:
+        player_selection = pitching_career[["teamID","playerID","nameFirst","nameLast"]]
+    elif len(pitching_career) == 0:
+        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]] 
+    elif len(pitching_career) > 1 and len(hitting_career) > 1:
+        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]]
+    else:
+        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]]  
+
+    player_choice = player_selection.drop_duplicates()
+    if len(player_choice) > 1:
+        return(player_choice.values.tolist())
+    else:
+        return(str(hitting_career.values), str(pitching_career.values), str(fielding_career.values), str(outfielding_career.values))
+
+
+@app.route('/player/<player_name>/<playerID>')
+@app.route('/player/<player_name>/<playerID>/')
+def player(player_name, playerID):
+    player_first_name = str(player_name.split(' ')[0]).title()
+    player_last_name = str(player_name.split(' ')[1]).title()
+    print(player_first_name, player_last_name)
+    players = getSQLTable('Master')
+    pitchers = getSQLTable('Pitching')
+    batters = getSQLTable('Batting')
+    fielders = getSQLTable('Fielding')
+    outfielders = getSQLTable('FieldingOF')  
+    player = players[(players["nameFirst"]==player_first_name) & (players["nameLast"]==player_last_name) & (players["playerID"]==playerID)]
+    hitting_career  = player.merge(batters, on="playerID")
+    pitching_career = player.merge(pitchers, on="playerID")
+    fielding_career = player.merge(fielders, on="playerID")
+    outfielding_career = player.merge(outfielders, on="playerID") 
+     
+    return(str(hitting_career.values), str(pitching_career.values), str(fielding_career.values), str(outfielding_career.values))
 
 
 @app.route('/teams')

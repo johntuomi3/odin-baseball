@@ -33,7 +33,7 @@ def createSuperUser(postgres_superuser, postgres_password):
         exit()
     cur = cnxn.cursor()  
     cur.execute("""do
-                    $body$
+                   $body$
                     BEGIN
                        IF NOT EXISTS (
                           SELECT *
@@ -43,7 +43,7 @@ def createSuperUser(postgres_superuser, postgres_password):
                           CREATE ROLE odin WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'admin';
                        END IF;
                     END
-                $body$;
+                    $body$;
                 """)
     cnxn.commit()
     cur.execute("ALTER USER odin WITH PASSWORD 'admin';")
@@ -63,7 +63,8 @@ def createDatabase():
                                     FROM   pg_catalog.pg_database
                                     WHERE  datname = 'odin_app'                    
                                   """)    
-    if odin_existance == "None":
+    print("Odin App Exists?", odin_existance)
+    if odin_existance == None:
         cur2.execute("""
                      CREATE DATABASE odin_app OWNER odin TEMPLATE template0;                          
                      """)   
