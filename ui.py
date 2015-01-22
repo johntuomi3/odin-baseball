@@ -95,7 +95,9 @@ def playerLooseSearch(player_name):
 
     player_choice = player_selection.drop_duplicates()
     if len(player_choice) > 1:
-        return(player_choice.values.tolist())
+        panel = Panel(player_choice.values.tolist(),'Multiple Players Found','warning')
+        return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
+        
     else:
         return(str(hitting_career.values), str(pitching_career.values), str(fielding_career.values), str(outfielding_career.values))
 
