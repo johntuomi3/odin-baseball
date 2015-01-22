@@ -4,7 +4,7 @@
         {{title}}
     </div>
     <div class="panel-body">
-        {{text}}
+        {{!text}}
     </div>
    </div>
 <!-- Your site ends here -->

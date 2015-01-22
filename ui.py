@@ -95,7 +95,12 @@ def playerLooseSearch(player_name):
 
     player_choice = player_selection.drop_duplicates()
     if len(player_choice) > 1:
-        panel = Panel(player_choice.values.tolist(),'Multiple Players Found','warning')
+        html_string = "<ul>"
+        for i in player_choice.values.tolist():
+            html_string +=("<li><a href=\"/player/"+ player_name +"/" + i[1]+"\">" + i[0]  + " " + str(player_name).title() + "</a></li>")
+        html_string += "</ul>"
+        print(html_string)
+        panel = Panel(html_string,'Multiple Players Found','warning')
         return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
         
     else:
