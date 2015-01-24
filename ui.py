@@ -200,7 +200,7 @@ class Table(object):
         self.data       = data
         
 
-run(app,debug=True,host='0.0.0.0',port='8080')
+run(app,debug=True,host='0.0.0.0',port='8080',server="cherrypy")
 
 
 
