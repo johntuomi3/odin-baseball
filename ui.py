@@ -79,7 +79,8 @@ def playerLooseSearch(player_name):
     outfielders = getSQLTable('FieldingOF')  
     player = players[(players["nameFirst"]==player_first_name) & (players["nameLast"]==player_last_name)]
     
-    hitting_career  = player.merge(batters, on="playerID")
+    hitting_career = player.merge(batters, on="playerID")
+    hitting_career = hitting_career.ix[:,"G":"GIDP"]
     pitching_career = player.merge(pitchers, on="playerID")
     fielding_career = player.merge(fielders, on="playerID")
     outfielding_career = player.merge(outfielders, on="playerID")
@@ -104,19 +105,16 @@ def playerLooseSearch(player_name):
         return template('view/default_container', widget=panel.name, panel_type=panel.type, text=panel.text, title=panel.title)
         
     else:
+        widget_list = []
         hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
         pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
         fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
         outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
-
-        widgets_topleft = [hitting_table]
-        widgets_topmiddle = []
-        widgets_topright = [pitching_table]
-        widgets_bottomleft = [outfielding_table]
-        widgets_bottommiddle = []
-        widgets_bottomright = [fielding_table]
-        
-        return template('view/player_container', widgets_topleft=widgets_topleft, widgets_topmiddle=widgets_topmiddle, widgets_topright = widgets_topright, widgets_bottomleft = widgets_bottomleft, widgets_bottommiddle=widgets_bottommiddle, widgets_bottomright = widgets_bottomright)
+        widget_list.append(hitting_table)
+        widget_list.append(pitching_table)
+        widget_list.append(fielding_table)
+        widget_list.append(pitching_table, fielding_table, outfielding_table)
+        return template('view/player_page', widgets=widget_list)
 
 
 @app.route('/player/<player_name>/<playerID>')
@@ -124,7 +122,7 @@ def playerLooseSearch(player_name):
 def player(player_name, playerID):
     player_first_name = str(player_name.split(' ')[0]).title()
     player_last_name = str(player_name.split(' ')[1]).title()
-    print(player_first_name, player_last_name)
+    #print(player_first_name, player_last_name)
     players = getSQLTable('Master')
     pitchers = getSQLTable('Pitching')
     batters = getSQLTable('Batting')
