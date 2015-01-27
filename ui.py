@@ -72,27 +72,110 @@ def playerLooseSearch(player_name):
     player_first_name = str(player_name.split(' ')[0]).title()
     player_last_name = str(player_name.split(' ')[1]).title()
     print(player_first_name, player_last_name)
-    players = getSQLTable('Master')
-    pitchers = getSQLTable('Pitching')
-    batters = getSQLTable('Batting')
-    fielders = getSQLTable('Fielding')
-    outfielders = getSQLTable('FieldingOF')  
-    player = players[(players["nameFirst"]==player_first_name) & (players["nameLast"]==player_last_name)]
-    
-    hitting_career = player.merge(batters, on="playerID")
-    hitting_career = hitting_career.ix[:,"G":"GIDP"]
-    pitching_career = player.merge(pitchers, on="playerID")
-    fielding_career = player.merge(fielders, on="playerID")
-    outfielding_career = player.merge(outfielders, on="playerID")
-    print(len(hitting_career), len(pitching_career))
-    if len(hitting_career) == 0:
-        player_selection = pitching_career[["teamID","playerID","nameFirst","nameLast"]]
-    elif len(pitching_career) == 0:
-        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]] 
-    elif len(pitching_career) > 1 and len(hitting_career) > 1:
-        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]]
-    else:
-        player_selection = hitting_career[["teamID","playerID","nameFirst","nameLast"]]  
+    batting_sql = """
+                    SELECT "yearID",
+                           "G", 
+                           "AB", 
+                           "R", 
+                           "H", 
+                           "2B", 
+                           "3B", 
+                           "HR", 
+                           "RBI", 
+                           "SB", 
+                           "CS", 
+                           "BB", 
+                           "SO", 
+                           "IBB",
+                           "HBP",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Batting"
+	                    ON "Master"."playerID" = "Batting"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                  """ %(player_first_name, player_last_name)
+
+
+    pitching_sql = """
+                    SELECT "yearID",
+                           "W", 
+                           "L", 
+                           "G", 
+                           "GS", 
+                           "CG", 
+                           "SHO", 
+                           "SV", 
+                           "IPouts", 
+                           "H", 
+                           "ER", 
+                           "HR", 
+                           "BB", 
+                           "SO",
+                           "BAOpp",
+                           "ERA",
+                           "IBB",
+                           "WP",
+                           "HBP",
+                           "BK",
+                           "BFP",
+                           "GF",
+                           "R",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Pitching"
+	                    ON "Master"."playerID" = "Pitching"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                  """ %(player_first_name, player_last_name)
+
+    fielding_sql = """
+                    SELECT "yearID",
+                           "POS", 
+                           "G", 
+                           "GS", 
+                           "InnOuts", 
+                           "PO", 
+                           "A", 
+                           "E", 
+                           "DP", 
+                           "PB", 
+                           "WP", 
+                           "SB", 
+                           "CS", 
+                           "ZR",
+                    FROM "Master"
+                    JOIN "Fielding"
+	                    ON "Master"."playerID" = "Fielding"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                  """ %(player_first_name, player_last_name)
+
+    outfielding_sql = """
+                    SELECT "yearID",
+                           "Glf", 
+                           "Gcf", 
+                           "Grf" 
+                    FROM "Master"
+                    JOIN "FieldingOF"
+	                    ON "Master"."playerID" = "FieldingOF"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                  """ %(player_first_name, player_last_name)
+
+    batting_career = pd.read_sql_query(batting_sql, engine)
+    pitching_career = pd.read_sql_query(pitching_sql, engine)
+    fielding_career = pd.read_sql_query(fielding_sql, engine)
+    outfielding_career = pd.read_sql_query(outfielding_sql, engine)
+
 
     player_choice = player_selection.drop_duplicates()
     if len(player_choice) > 1:
