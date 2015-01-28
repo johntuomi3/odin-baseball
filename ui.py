@@ -69,7 +69,10 @@ def players(teamID, year):
 @app.route('/player/<player_name>')
 @app.route('/player/<player_name>/')
 def playerLooseSearch(player_name):
-    player_first_name = str(player_name.split(' ')[0]).title()
+    if len(str(player_name.split(' ')[0])) == 2:
+        player_first_name = str(player_name.split(' ')[0]).upper()
+    else:
+        player_first_name = str(player_name.split(' ')[0]).title()
     player_last_name = str(player_name.split(' ')[1]).title()
     print(player_first_name, player_last_name)
     player_sql = """
@@ -219,7 +222,10 @@ def playerLooseSearch(player_name):
 @app.route('/player/<player_name>/<playerID>')
 @app.route('/player/<player_name>/<playerID>/')
 def player(player_name, playerID):
-    player_first_name = str(player_name.split(' ')[0]).title()
+    if len(str(player_name.split(' ')[0])) == 2:
+        player_first_name = str(player_name.split(' ')[0]).upper()
+    else:
+        player_first_name = str(player_name.split(' ')[0]).title()
     player_last_name = str(player_name.split(' ')[1]).title()
     #print(player_first_name, player_last_name)
     batting_sql = """
@@ -387,6 +393,7 @@ class Card(object):
     def __init__(self, text, title, type):
         self.name       = 'card'
         self.text       = text
+
 
 class Panel(object):
     def __init__(self, text, title, type):
