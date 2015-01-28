@@ -3,15 +3,14 @@ from utility import *
 
 app = Bottle()
 
-#TODO: Add a route for Team Specific Careers ex. Andy Pettite, Barry Zito, CC Sabathia 
+ 
 #TODO: Trim Team Roster Queries
-#TODO: Create Card UI Element
-#TODO: Add Player Search Functionality
 #TODO: Format Player Page better
 #TODO: Start Experimenting with Projections ex. Trend Last 3 Years League Average WAR vs Player WAR
 #TODO: Implement Team Specific Views
 #TODO: Add Salary Specific Views
-
+#TODO: Add Player Search Functionality
+#TODO: Work on Nav Bar
 
 # Routes
 @app.route('/')
@@ -226,10 +225,25 @@ def playerLooseSearch(player_name):
         pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
         fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
         outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
-        widget_list.append(hitting_table)
-        widget_list.append(pitching_table)
-        widget_list.append(fielding_table)
-        widget_list.append(outfielding_table)
+        no_data_card = Card(text = "<center><h1>No Data</h1></center>")
+
+        widget_list = []
+        if len(hitting_career.values) != 0:
+            widget_list.append(hitting_table)
+        else:
+            widget_list.append(no_data_card)
+        if len(pitching_career.values) != 0:
+            widget_list.append(pitching_table)
+        else:
+            widget_list.append(no_data_card)
+        if len(fielding_career.values) != 0:    
+            widget_list.append(fielding_table)
+        else:
+            widget_list.append(no_data_card)
+        if len(outfielding_career.values) != 0:    
+            widget_list.append(outfielding_table)
+        else:
+            widget_list.append(no_data_card)
         return template('view/player_page', widgets=widget_list)
 
 
@@ -359,17 +373,27 @@ def player(player_name, playerID):
     pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
     fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
     outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+    no_data_card = Card("<center><h1>No Data</h1></center>")
 
     widget_list = []
-    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
-    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
-    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
-    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
-    widget_list.append(hitting_table)
-    widget_list.append(pitching_table)
-    widget_list.append(fielding_table)
-    widget_list.append(outfielding_table)
+    if len(hitting_career.values) != 0:
+        widget_list.append(hitting_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(pitching_career.values) != 0:
+        widget_list.append(pitching_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(fielding_career.values) != 0:    
+        widget_list.append(fielding_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(outfielding_career.values) != 0:    
+        widget_list.append(outfielding_table)
+    else:
+        widget_list.append(no_data_card)
     return template('view/player_page', widgets=widget_list)
+    
 
 
 @app.route('/player/<player_name>/<playerID>/career')
@@ -498,16 +522,25 @@ def playerCareer(player_name, playerID):
     pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
     fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
     outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+    no_data_card = Card("<center><h1>No Data</h1></center>")
 
     widget_list = []
-    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
-    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
-    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
-    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
-    widget_list.append(hitting_table)
-    widget_list.append(pitching_table)
-    widget_list.append(fielding_table)
-    widget_list.append(outfielding_table)
+    if len(hitting_career.values) != 0:
+        widget_list.append(hitting_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(pitching_career.values) != 0:
+        widget_list.append(pitching_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(fielding_career.values) != 0:    
+        widget_list.append(fielding_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(outfielding_career.values) != 0:    
+        widget_list.append(outfielding_table)
+    else:
+        widget_list.append(no_data_card)
     return template('view/player_page', widgets=widget_list)
 
 
@@ -645,16 +678,25 @@ def playerTeamCareer(player_name, playerID, teamID):
     pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
     fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
     outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+    no_data_card = Card("<center><h1>No Data</h1></center>")
 
     widget_list = []
-    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
-    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
-    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
-    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
-    widget_list.append(hitting_table)
-    widget_list.append(pitching_table)
-    widget_list.append(fielding_table)
-    widget_list.append(outfielding_table)
+    if len(hitting_career.values) != 0:
+        widget_list.append(hitting_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(pitching_career.values) != 0:
+        widget_list.append(pitching_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(fielding_career.values) != 0:    
+        widget_list.append(fielding_table)
+    else:
+        widget_list.append(no_data_card)
+    if len(outfielding_career.values) != 0:    
+        widget_list.append(outfielding_table)
+    else:
+        widget_list.append(no_data_card)
     return template('view/player_page', widgets=widget_list)
 
      
@@ -694,7 +736,7 @@ def stylesheets(filename):
 
 #Web UI Elements
 class Card(object):
-    def __init__(self, text, title, type):
+    def __init__(self, text):
         self.name       = 'card'
         self.text       = text
 

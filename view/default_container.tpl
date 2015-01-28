@@ -6,6 +6,8 @@
 			%include('view/panel.tpl')
 		%elif widget == 'table':
 			%include('view/table.tpl')
+		%elif widget == 'card':
+			%include('view/card.tpl')
 		%end
     </div>
 	<noscript>
