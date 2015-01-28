@@ -372,6 +372,146 @@ def player(player_name, playerID):
     return template('view/player_page', widgets=widget_list)
 
 
+@app.route('/player/<player_name>/<playerID>/career')
+@app.route('/player/<player_name>/<playerID>/career/')
+def playerCareer(player_name, playerID):
+    if len(str(player_name).split(' ')) == 3:
+        player_first_name = str(player_name.split(' ')[0] + ' ' + player_name.split(' ')[1]).title()
+        player_last_name = str(player_name.split(' ')[2]).title()
+    else:
+        if len(str(player_name.split(' ')[0])) == 2:
+            player_first_name = str(player_name.split(' ')[0]).upper()
+        else:
+            player_first_name = str(player_name.split(' ')[0]).title()
+        player_last_name = str(player_name.split(' ')[1]).title()
+    #print(player_first_name, player_last_name)
+    batting_sql = """
+                    SELECT "yearID",
+                           "G", 
+                           "AB", 
+                           "R", 
+                           "H", 
+                           "2B", 
+                           "3B", 
+                           "HR", 
+                           "RBI", 
+                           "SB", 
+                           "CS", 
+                           "BB", 
+                           "SO", 
+                           "IBB",
+                           "HBP",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Batting"
+	                    ON "Master"."playerID" = "Batting"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                  """ %(player_first_name, player_last_name, playerID)
+
+
+    pitching_sql = """
+                    SELECT "yearID",
+                           "W", 
+                           "L", 
+                           "G", 
+                           "GS", 
+                           "CG", 
+                           "SHO", 
+                           "SV", 
+                           "IPouts", 
+                           "H", 
+                           "ER", 
+                           "HR", 
+                           "BB", 
+                           "SO",
+                           "BAOpp",
+                           "ERA",
+                           "IBB",
+                           "WP",
+                           "HBP",
+                           "BK",
+                           "BFP",
+                           "GF",
+                           "R",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Pitching"
+	                    ON "Master"."playerID" = "Pitching"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                  """ %(player_first_name, player_last_name, playerID)
+
+    fielding_sql = """
+                    SELECT "yearID",
+                           "POS", 
+                           "G", 
+                           "GS", 
+                           "InnOuts", 
+                           "PO", 
+                           "A", 
+                           "E", 
+                           "DP", 
+                           "PB", 
+                           "WP", 
+                           "SB", 
+                           "CS", 
+                           "ZR"
+                    FROM "Master"
+                    JOIN "Fielding"
+	                    ON "Master"."playerID" = "Fielding"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                  """ %(player_first_name, player_last_name, playerID)
+
+    outfielding_sql = """
+                    SELECT "yearID",
+                           "Glf", 
+                           "Gcf", 
+                           "Grf" 
+                    FROM "Master"
+                    JOIN "FieldingOF"
+	                    ON "Master"."playerID" = "FieldingOF"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                  """ %(player_first_name, player_last_name, playerID)
+    
+    hitting_career = pd.read_sql_query(batting_sql, engine)
+    pitching_career = pd.read_sql_query(pitching_sql, engine)
+    fielding_career = pd.read_sql_query(fielding_sql, engine)
+    outfielding_career = pd.read_sql_query(outfielding_sql, engine)
+    
+    
+    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
+    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
+    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
+    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+
+    widget_list = []
+    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
+    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
+    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
+    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+    widget_list.append(hitting_table)
+    widget_list.append(pitching_table)
+    widget_list.append(fielding_table)
+    widget_list.append(outfielding_table)
+    return template('view/player_page', widgets=widget_list)
+
+
+
 @app.route('/player/<player_name>/<playerID>/<teamID>')
 @app.route('/player/<player_name>/<playerID>/<teamID>/')
 def playerTeamCareer(player_name, playerID, teamID):
