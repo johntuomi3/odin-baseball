@@ -3,6 +3,16 @@ from utility import *
 
 app = Bottle()
 
+#TODO: Add a route for Team Specific Careers ex. Andy Pettite, Barry Zito, CC Sabathia 
+#TODO: Trim Team Roster Queries
+#TODO: Create Card UI Element
+#TODO: Add Player Search Functionality
+#TODO: Format Player Page better
+#TODO: Start Experimenting with Projections ex. Trend Last 3 Years League Average WAR vs Player WAR
+#TODO: Implement Team Specific Views
+#TODO: Add Salary Specific Views
+
+
 # Routes
 @app.route('/')
 def index():
@@ -69,11 +79,15 @@ def players(teamID, year):
 @app.route('/player/<player_name>')
 @app.route('/player/<player_name>/')
 def playerLooseSearch(player_name):
-    if len(str(player_name.split(' ')[0])) == 2:
-        player_first_name = str(player_name.split(' ')[0]).upper()
+    if len(str(player_name).split(' ')) == 3:
+        player_first_name = str(player_name.split(' ')[0] + ' ' + player_name.split(' ')[1]).title()
+        player_last_name = str(player_name.split(' ')[2]).title()
     else:
-        player_first_name = str(player_name.split(' ')[0]).title()
-    player_last_name = str(player_name.split(' ')[1]).title()
+        if len(str(player_name.split(' ')[0])) == 2:
+            player_first_name = str(player_name.split(' ')[0]).upper()
+        else:
+            player_first_name = str(player_name.split(' ')[0]).title()
+            player_last_name = str(player_name.split(' ')[1]).title()
     print(player_first_name, player_last_name)
     player_sql = """
                     SELECT "Master"."playerID"
@@ -200,7 +214,7 @@ def playerLooseSearch(player_name):
     if len(player_choice) > 1:
         html_string = "<ul>"
         for i in player_choice.values.tolist():
-            html_string +=("<li><a href=\"/player/"+ player_name +"/" + i[0]+"\">" + i[1]  + " " + str(player_name).title() + "</a></li>")
+            html_string +=("<li><a href=\"/player/"+ player_name +"/" + i[0]+ "/" + i[1] + "\">" + i[1]  + " " + str(player_name).title() + "</a></li>")
         html_string += "</ul>"
         print(html_string)
         panel = Panel(html_string,'Multiple Players Found','warning')
@@ -222,11 +236,15 @@ def playerLooseSearch(player_name):
 @app.route('/player/<player_name>/<playerID>')
 @app.route('/player/<player_name>/<playerID>/')
 def player(player_name, playerID):
-    if len(str(player_name.split(' ')[0])) == 2:
-        player_first_name = str(player_name.split(' ')[0]).upper()
+    if len(str(player_name).split(' ')) == 3:
+        player_first_name = str(player_name.split(' ')[0] + ' ' + player_name.split(' ')[1]).title()
+        player_last_name = str(player_name.split(' ')[2]).title()
     else:
-        player_first_name = str(player_name.split(' ')[0]).title()
-    player_last_name = str(player_name.split(' ')[1]).title()
+        if len(str(player_name.split(' ')[0])) == 2:
+            player_first_name = str(player_name.split(' ')[0]).upper()
+        else:
+            player_first_name = str(player_name.split(' ')[0]).title()
+        player_last_name = str(player_name.split(' ')[1]).title()
     #print(player_first_name, player_last_name)
     batting_sql = """
                     SELECT "yearID",
@@ -330,6 +348,152 @@ def player(player_name, playerID):
                              AND "Master"."nameLast" = '%s'
                              AND "Master"."playerID" = '%s'
                   """ %(player_first_name, player_last_name, playerID)
+    
+    hitting_career = pd.read_sql_query(batting_sql, engine)
+    pitching_career = pd.read_sql_query(pitching_sql, engine)
+    fielding_career = pd.read_sql_query(fielding_sql, engine)
+    outfielding_career = pd.read_sql_query(outfielding_sql, engine)
+    
+    
+    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
+    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
+    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
+    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+
+    widget_list = []
+    hitting_table = Table(hitting_career.columns.values.tolist(), hitting_career.values)
+    pitching_table = Table(pitching_career.columns.values.tolist(), pitching_career.values)
+    fielding_table = Table(fielding_career.columns.values.tolist(), fielding_career.values)
+    outfielding_table = Table(outfielding_career.columns.values.tolist(), outfielding_career.values)
+    widget_list.append(hitting_table)
+    widget_list.append(pitching_table)
+    widget_list.append(fielding_table)
+    widget_list.append(outfielding_table)
+    return template('view/player_page', widgets=widget_list)
+
+
+@app.route('/player/<player_name>/<playerID>/<teamID>')
+@app.route('/player/<player_name>/<playerID>/<teamID>/')
+def playerTeamCareer(player_name, playerID, teamID):
+    if len(str(player_name).split(' ')) == 3:
+        player_first_name = str(player_name.split(' ')[0] + ' ' + player_name.split(' ')[1]).title()
+        player_last_name = str(player_name.split(' ')[2]).title()
+    else:
+        if len(str(player_name.split(' ')[0])) == 2:
+            player_first_name = str(player_name.split(' ')[0]).upper()
+        else:
+            player_first_name = str(player_name.split(' ')[0]).title()
+        player_last_name = str(player_name.split(' ')[1]).title()
+    #print(player_first_name, player_last_name)
+    batting_sql = """
+                    SELECT "yearID",
+                           "G", 
+                           "AB", 
+                           "R", 
+                           "H", 
+                           "2B", 
+                           "3B", 
+                           "HR", 
+                           "RBI", 
+                           "SB", 
+                           "CS", 
+                           "BB", 
+                           "SO", 
+                           "IBB",
+                           "HBP",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Batting"
+	                    ON "Master"."playerID" = "Batting"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                             AND "Batting"."teamID" = '%s'
+                  """ %(player_first_name, player_last_name, playerID, teamID)
+
+
+    pitching_sql = """
+                    SELECT "yearID",
+                           "W", 
+                           "L", 
+                           "G", 
+                           "GS", 
+                           "CG", 
+                           "SHO", 
+                           "SV", 
+                           "IPouts", 
+                           "H", 
+                           "ER", 
+                           "HR", 
+                           "BB", 
+                           "SO",
+                           "BAOpp",
+                           "ERA",
+                           "IBB",
+                           "WP",
+                           "HBP",
+                           "BK",
+                           "BFP",
+                           "GF",
+                           "R",
+                           "SH",
+                           "SF",
+                           "GIDP"
+                    FROM "Master"
+                    JOIN "Pitching"
+	                    ON "Master"."playerID" = "Pitching"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                             AND "Pitching"."teamID"   = '%s'
+                  """ %(player_first_name, player_last_name, playerID, teamID)
+
+    fielding_sql = """
+                    SELECT "yearID",
+                           "POS", 
+                           "G", 
+                           "GS", 
+                           "InnOuts", 
+                           "PO", 
+                           "A", 
+                           "E", 
+                           "DP", 
+                           "PB", 
+                           "WP", 
+                           "SB", 
+                           "CS", 
+                           "ZR"
+                    FROM "Master"
+                    JOIN "Fielding"
+	                    ON "Master"."playerID" = "Fielding"."playerID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                             AND "Fielding"."teamID"   = '%s'
+                  """ %(player_first_name, player_last_name, playerID, teamID)
+
+    outfielding_sql = """
+                    SELECT "FieldingOF"."yearID",
+                           "Glf", 
+                           "Gcf", 
+                           "Grf" 
+                    FROM "Master"
+                    JOIN "Fielding"
+                        ON "Master"."playerID" = "Fielding"."playerID"
+                    LEFT JOIN "FieldingOF"
+	                    ON "Master"."playerID" = "FieldingOF"."playerID"
+                        AND "Fielding"."yearID" = "FieldingOF"."yearID"
+                    WHERE 
+	                    "Master"."nameFirst" = '%s'
+                             AND "Master"."nameLast"    = '%s'
+                             AND "Master"."playerID"    = '%s'
+                             AND "Fielding"."teamID"    = '%s'
+                  """ %(player_first_name, player_last_name, playerID, teamID)
     
     hitting_career = pd.read_sql_query(batting_sql, engine)
     pitching_career = pd.read_sql_query(pitching_sql, engine)
