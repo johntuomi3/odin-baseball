@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{c8fb1ece-04cd-41a2-b211-cca6c3e13399}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>database.py</StartupFile>
+    <StartupFile>ui.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="res" />
+    <Folder Include="static\" />
     <Folder Include="static\css" />
     <Folder Include="static\fonts" />
     <Folder Include="static\js" />
