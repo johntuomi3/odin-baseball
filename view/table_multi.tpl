@@ -1,5 +1,8 @@
 <!--Table Widget Start-->
 <div class = 'table-responsive'>
+  <div>
+    <h1>{{widget.title}}</h1>
+  </div>
   <table class = "table table-striped table-hover table-bordered ">
     <thead>
       <tr>
