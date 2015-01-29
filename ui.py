@@ -262,7 +262,6 @@ def playerTeamCareer(player_name, playerID, teamID):
         no_data_card.text = "<center><h1>No Fielding Data Available</h1></center>"
         widget_list.append(no_data_card)
     return template('view/player_page', widgets=widget_list)
-
      
 
 @app.route('/teams')
