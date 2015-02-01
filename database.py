@@ -473,3 +473,152 @@ def sqlBattingCareerLastThree(player_first_name, player_last_name, playerID=None
                         ) AS p
              """ %(player_first_name, player_last_name, playerID, teamID)
     return sql
+
+
+def sqlMLBAverageBattingLastThreeYears():
+    sql = """
+            SELECT   SUM("TOTAL_G")    		    MLB_3AVG_G
+	                ,SUM("TOTAL_AB")			MLB_3AVG_AB
+	                ,SUM("TOTAL_R")				MLB_3AVG_R
+	                ,SUM("TOTAL_H")				MLB_3AVG_H
+	                ,SUM("TOTAL_2B")			MLB_3AVG_2B
+	                ,SUM("TOTAL_3B")			MLB_3AVG_3B
+	                ,SUM("TOTAL_HR")			MLB_3AVG_HR
+	                ,SUM("TOTAL_RBI")			MLB_3AVG_RBI
+	                ,SUM("TOTAL_SB")			MLB_3AVG_SB
+	                ,SUM("TOTAL_CS")			MLB_3AVG_CS
+	                ,SUM("TOTAL_BB")			MLB_3AVG_BB
+	                ,SUM("TOTAL_SO")			MLB_3AVG_SO	
+	                ,SUM("TOTAL_IBB")			MLB_3AVG_IBB
+	                ,SUM("TOTAL_HBP")			MLB_3AVG_HBP
+	                ,SUM("TOTAL_SH")			MLB_3AVG_SH
+	                ,SUM("TOTAL_SF")			MLB_3AVG_SF
+	                ,SUM("TOTAL_GIDP")		                                                            MLB_3AVG_GIDP
+	                ,SUM("TOTAL_H")/SUM("TOTAL_AB")      																	MLB_3AVG_BAT_AVG
+	                ,SUM("TOTAL_H") - (SUM("TOTAL_2B") + SUM("TOTAL_3B") + SUM("TOTAL_HR")) 												MLB_3AVG_1B
+	                ,(SUM("TOTAL_H") - (SUM("TOTAL_2B") + SUM("TOTAL_3B") + SUM("TOTAL_HR"))) + (SUM("TOTAL_2B") * 2) + (SUM("TOTAL_3B")* 3) + (SUM("TOTAL_HR") * 4) 			MLB_3AVG_TB
+	                ,((SUM("TOTAL_H") - (SUM("TOTAL_2B") + SUM("TOTAL_3B") + SUM("TOTAL_HR"))) + (SUM("TOTAL_2B") * 2) + (SUM("TOTAL_3B")* 3) + (SUM("TOTAL_HR") * 4))/SUM("TOTAL_AB")	MLB_3AVG_SLUG
+	                ,(SUM("TOTAL_H") + SUM("TOTAL_BB") + SUM("TOTAL_IBB") + SUM("TOTAL_HBP"))/(SUM("TOTAL_AB")+ SUM("TOTAL_BB") + SUM("TOTAL_IBB") + SUM("TOTAL_HBP")+ SUM("TOTAL_SF")) 	MLB_3AVG_OBP
+                FROM(
+                SELECT	"Batting"."yearID"
+	                ,SUM("G")/c.NUM_PLAYERS		"TOTAL_G"
+	                ,SUM("AB")/c.NUM_PLAYERS	"TOTAL_AB"
+	                ,SUM("R")/c.NUM_PLAYERS		"TOTAL_R"		
+	                ,SUM("H")/c.NUM_PLAYERS		"TOTAL_H"
+	                ,SUM("2B")/c.NUM_PLAYERS	"TOTAL_2B"
+	                ,SUM("3B")/c.NUM_PLAYERS	"TOTAL_3B"
+	                ,SUM("HR")/c.NUM_PLAYERS	"TOTAL_HR"
+	                ,SUM("RBI")/c.NUM_PLAYERS	"TOTAL_RBI"
+	                ,SUM("SB")/c.NUM_PLAYERS	"TOTAL_SB"
+	                ,SUM("CS")/c.NUM_PLAYERS	"TOTAL_CS"
+	                ,SUM("BB")/c.NUM_PLAYERS	"TOTAL_BB"
+	                ,SUM("SO")/c.NUM_PLAYERS	"TOTAL_SO"
+	                ,SUM("IBB")/c.NUM_PLAYERS	"TOTAL_IBB"
+	                ,SUM("HBP")/c.NUM_PLAYERS	"TOTAL_HBP"
+	                ,SUM("SH")/c.NUM_PLAYERS	"TOTAL_SH"
+	                ,SUM("SF")/c.NUM_PLAYERS	"TOTAL_SF"
+	                ,SUM("GIDP")/c.NUM_PLAYERS	"TOTAL_GIDP"
+	                ,c.NUM_PLAYERS
+	
+                FROM
+	                "Batting"
+                LEFT JOIN
+	                (SELECT 	COUNT(DISTINCT "playerID") NUM_PLAYERS
+	                       ,"yearID"
+	                 FROM
+		                "Batting"
+
+	                 GROUP BY
+		                "yearID") as c
+                ON "Batting"."yearID" = c."yearID"
+
+		
+                GROUP BY
+	                "Batting"."yearID"
+	                ,c.NUM_PLAYERS
+                ORDER BY
+                "yearID" DESC
+
+                LIMIT 3
+                ) as N
+          """
+    return sql
+
+def sqlMLBAveragePitchingLastThreeYears():
+    sql = """
+            SELECT   SUM("TOTAL_W")    		        MLB_3AVG_W
+	                ,SUM("TOTAL_L")				MLB_3AVG_L
+	                ,SUM("TOTAL_G")				MLB_3AVG_G
+	                ,SUM("TOTAL_GS")			MLB_3AVG_GS
+	                ,SUM("TOTAL_CG")			MLB_3AVG_CG
+	                ,SUM("TOTAL_SHO")			MLB_3AVG_SHO
+	                ,SUM("TOTAL_SV")			MLB_3AVG_SV
+	                ,SUM("TOTAL_IPOUTS")			MLB_3AVG_IPOUTS
+	                ,SUM("TOTAL_H")				MLB_3AVG_H
+	                ,SUM("TOTAL_ER")			MLB_3AVG_ER
+	                ,SUM("TOTAL_HR")			MLB_3AVG_HR
+	                ,SUM("TOTAL_BB")			MLB_3AVG_BB	
+	                ,SUM("TOTAL_SO")			MLB_3AVG_SO
+	                ,SUM("TOTAL_BAOPP")			MLB_3AVG_BAOPP
+	                ,SUM("TOTAL_ERA")				MLB_3AVG_ERA
+	                ,SUM("TOTAL_IBB")				MLB_3AVG_IBB
+	                ,SUM("TOTAL_WP")		     		MLB_3AVG_WP
+	                ,SUM("TOTAL_HBP")		     		MLB_3AVG_HBP
+	                ,SUM("TOTAL_BK")		     		MLB_3AVG_BK
+	                ,SUM("TOTAL_BFP")		     		MLB_3AVG_BFP
+	                ,SUM("TOTAL_GF")		     		MLB_3AVG_GF
+	                ,SUM("TOTAL_R")		     			MLB_3AVG_R
+	                ,SUM("TOTAL_SH")		     		MLB_3AVG_SH
+	                ,SUM("TOTAL_SF")		     		MLB_3AVG_SF
+	                ,SUM("TOTAL_GIDP")		     		MLB_3AVG_GIDP
+                FROM(
+                SELECT	"Pitching"."yearID"
+	                ,SUM("W")/c.NUM_PLAYERS		"TOTAL_W"
+	                ,SUM("L")/c.NUM_PLAYERS		"TOTAL_L"
+	                ,SUM("G")/c.NUM_PLAYERS		"TOTAL_G"		
+	                ,SUM("GS")/c.NUM_PLAYERS	"TOTAL_GS"
+	                ,SUM("CG")/c.NUM_PLAYERS	"TOTAL_CG"
+	                ,SUM("SHO")/c.NUM_PLAYERS	"TOTAL_SHO"
+	                ,SUM("SV")/c.NUM_PLAYERS	"TOTAL_SV"
+	                ,SUM("IPouts")/c.NUM_PLAYERS	"TOTAL_IPOUTS"
+	                ,SUM("H")/c.NUM_PLAYERS		"TOTAL_H"
+	                ,SUM("ER")/c.NUM_PLAYERS	"TOTAL_ER"
+	                ,SUM("HR")/c.NUM_PLAYERS	"TOTAL_HR"
+	                ,SUM("BB")/c.NUM_PLAYERS	"TOTAL_BB"
+	                ,SUM("SO")/c.NUM_PLAYERS	"TOTAL_SO"
+	                ,SUM("BAOpp")/c.NUM_PLAYERS	"TOTAL_BAOPP"
+	                ,SUM("ERA")/c.NUM_PLAYERS	"TOTAL_ERA"
+	                ,SUM("IBB")/c.NUM_PLAYERS	"TOTAL_IBB"
+	                ,SUM("WP")/c.NUM_PLAYERS	"TOTAL_WP"
+	                ,SUM("HBP")/c.NUM_PLAYERS	"TOTAL_HBP"
+	                ,SUM("BK")/c.NUM_PLAYERS	"TOTAL_BK"
+	                ,SUM("BFP")/c.NUM_PLAYERS	"TOTAL_BFP"
+	                ,SUM("GF")/c.NUM_PLAYERS	"TOTAL_GF"
+	                ,SUM("R")/c.NUM_PLAYERS		"TOTAL_R"
+	                ,SUM("SH")/c.NUM_PLAYERS	"TOTAL_SH"
+	                ,SUM("SF")/c.NUM_PLAYERS	"TOTAL_SF"
+	                ,SUM("GIDP")/c.NUM_PLAYERS	"TOTAL_GIDP"
+	                ,c.NUM_PLAYERS
+	
+                FROM
+	                "Pitching"
+                LEFT JOIN
+	                (SELECT 	COUNT(DISTINCT "playerID") NUM_PLAYERS
+	                       ,"yearID"
+	                 FROM
+		                "Pitching"
+
+	                 GROUP BY
+		                "yearID") as c
+                ON "Pitching"."yearID" = c."yearID"
+
+		
+                GROUP BY
+	                "Pitching"."yearID"
+	                ,c.NUM_PLAYERS
+                ORDER BY
+                "yearID" DESC
+
+                LIMIT 3
+                ) as N
+          """
