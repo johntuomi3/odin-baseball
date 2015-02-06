@@ -285,7 +285,8 @@ def reportCard(player_name, playerID, teamID):
 
     mlb_hitting = pd.read_sql_query(sqlMLBAverageBattingLastThreeYears(),engine)
     mlb_pitching = pd.read_sql_query(sqlMLBAveragePitchingLastThreeYears(),engine)
-    
+
+    gradePlayer(mlb_hitting,mlb_pitching,hitting_avg3,pitching_avg3)
     
     hitting_table = Table("Batting Averages over 3 Years",hitting_avg3.columns.values.tolist(), hitting_avg3.values)
     pitching_table = Table("Pitching Averages over 3 Years",pitching_avg3.columns.values.tolist(), pitching_avg3.values)
@@ -372,5 +373,122 @@ class Table(object):
         self.title      = title  
         self.fields     = fields
         self.data       = data
+
+
+def gradePlayer(mlb_hitting_df, mlb_pitching_df, player_hitting_df=None, player_pitching_df=None, player_fielding_df=None):
+    #Compare Hitting
+    pbat = player_hitting_df
+    mlbat = mlb_hitting_df
+    print(pbat)
+    
+    if not pbat.empty:
+        #Games#
+        #Excellent A-Grade
+        if pbat.loc[0,"g_3avg"] <= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.07) and pbat.loc[0,"g_3avg"] >= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.24) :        
+            print("G: A")
+
+        #Good B-Grade
+        elif pbat.loc[0,"g_3avg"] <= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.24) and pbat.loc[0,"g_3avg"] >= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.38):        
+            print("G: B")
+
+        #Average C-Grade
+        elif pbat.loc[0,"g_3avg"] <= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.38) and pbat.loc[0,"g_3avg"] >= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.62):        
+            print("G: C")
+
+        #Below Average D-Grade
+        elif pbat.loc[0,"g_3avg"] <= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.62) and pbat.loc[0,"g_3avg"] >= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.69):        
+            print("G: D")
+
+        #Failing F-Grade
+        elif pbat.loc[0,"g_3avg"] <= (mlbat.loc[0,"mlb_3avg_g"]) - ((mlbat.loc[0,"mlb_3avg_g"]) * 0.69):        
+            print("G: F")
+
+        #At Bats#
+        #Excellent A-Grade
+        if pbat.loc[0,"ab_3avg"] >= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.07) and pbat.loc[0,"ab_3avg"] >= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.24):        
+            print("AB: A")
+
+        #Good B-Grade
+        if pbat.loc[0,"ab_3avg"] <= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.24) and pbat.loc[0,"ab_3avg"] >= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.38):        
+            print("AB: B")
+
+        #Average C-Grade
+        if pbat.loc[0,"ab_3avg"] <= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.38) and pbat.loc[0,"ab_3avg"] >= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.62):        
+            print("AB: C")
+
+        #Below Average D-Grade
+        if pbat.loc[0,"ab_3avg"] <= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.62) and pbat.loc[0,"ab_3avg"] >= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.69):        
+            print("AB: D")
+
+        #Failing F-Grade
+        if pbat.loc[0,"ab_3avg"] <= (mlbat.loc[0,"mlb_3avg_ab"]) - ((mlbat.loc[0,"mlb_3avg_ab"]) * 0.69):        
+            print("AB: F")
+
+        #Runs#
+        #Excellent A-Grade
+        if pbat.loc[0,"r_3avg"] >= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.07) and pbat.loc[0,"r_3avg"] >= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.24):        
+            print("R: A")
+
+        #Good B-Grade
+        if pbat.loc[0,"r_3avg"] <= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.24) and pbat.loc[0,"r_3avg"] >= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.38):        
+            print("R: B")
+
+        #Average C-Grade
+        if pbat.loc[0,"r_3avg"] <= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.38) and pbat.loc[0,"r_3avg"] >= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.62):        
+            print("R: C")
+
+        #Below Average D-Grade
+        if pbat.loc[0,"r_3avg"] <= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.620) and pbat.loc[0,"r_3avg"] >= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.69):        
+            print("R: D")
+
+        #Failing F-Grade
+        if pbat.loc[0,"r_3avg"] <= (mlbat.loc[0,"mlb_3avg_r"]) - ((mlbat.loc[0,"mlb_3avg_r"]) * 0.690):        
+            print("R: F")
+
+        #Hits#
+        #Excellent A-Grade
+        if pbat.loc[0,"h_3avg"] >= (mlbat.loc[0,"mlb_3avg_h"]) - ((mlbat.loc[0,"mlb_3avg_h"]) * 0.070):        
+            print("H: A")
+
+        #Good B-Grade
+        if pbat.loc[0,"h_3avg"] <= (mlbat.loc[0,"mlb_3avg_h"]) - ((mlbat.loc[0,"mlb_3avg_h"]) * 0.240):        
+            print("H: B")
+
+        #Average C-Grade
+        if pbat.loc[0,"h_3avg"] <= (mlbat.loc[0,"mlb_3avg_h"]) - ((mlbat.loc[0,"mlb_3avg_h"]) * 0.380):        
+            print("H: C")
+
+        #Below Average D-Grade
+        if pbat.loc[0,"h_3avg"] <= (mlbat.loc[0,"mlb_3avg_h"]) - ((mlbat.loc[0,"mlb_3avg_h"]) * 0.620):        
+            print("H: D")
+
+        #Failing F-Grade
+        if pbat.loc[0,"h_3avg"] <= (mlbat.loc[0,"mlb_3avg_h"]) - ((mlbat.loc[0,"mlb_3avg_h"]) * 0.690):        
+            print("H: F")
+
+        #Doubles#
+        #Excellent A-Grade
+        if pbat.loc[0,"2B_3AVG"] >= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.070):        
+            print("2B: A")
+
+        #Good B-Grade
+        if pbat.loc[0,"2B_3AVG"] <= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.240):        
+            print("2B: B")
+
+        #Average C-Grade
+        if pbat.loc[0,"2B_3AVG"] <= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.380):        
+            print("2B: C")
+
+        #Below Average D-Grade
+        if pbat.loc[0,"2B_3AVG"] <= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.620):        
+            print("2B: D")
+
+        #Failing F-Grade
+        if pbat.loc[0,"2B_3AVG"] <= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.690):        
+            print("2B: F")
+
+        
+   
+    
         
 run(app,debug=True,host='0.0.0.0',port='8080',server="cherrypy")
