@@ -474,6 +474,211 @@ def sqlBattingCareerLastThree(player_first_name, player_last_name, playerID=None
              """ %(player_first_name, player_last_name, playerID, teamID)
     return sql
 
+def sqlPitchingCareerLastThreeYears(player_first_name, player_last_name, playerID=None, teamID=None):
+    if playerID == None:
+        sql = """
+            SELECT SUM(p."W")/3.000		W_3AVG
+			      ,SUM(p."L")/3.000		L_3AVG
+			      ,SUM(p."G")/3.000		G_3AVG
+			      ,SUM(p."GS")/3.000	GS_3AVG
+			      ,SUM(p."CG")/3.000	"CG_3AVG"
+			      ,SUM(p."SHO")/3.000	"SHO_3AVG"
+			      ,SUM(p."SV")/3.000	SV_3AVG
+			      ,SUM(p."IPouts")/3.000	IPOUTS_3AVG
+			      ,SUM(p."H")/3.000		H_3AVG
+			      ,SUM(p."ER")/3.000	ER_3AVG
+			      ,SUM(p."HR")/3.000	HR_3AVG
+			      ,SUM(p."BB")/3.000	BB_3AVG
+			      ,SUM(p."SO")/3.000	SO_3AVG
+			      ,SUM(p."BAOpp")/3.000	BAOPP_3AVG
+			      ,SUM(p."ERA")/3.000	ERA_3AVG
+			      ,SUM(p."IBB")/3.000	IBB_3AVG
+			      ,SUM(p."WP")/3.000	WP_3AVG
+			      ,SUM(p."HBP")/3.000	HBP_3AVG
+			      ,SUM(p."BK")/3.000	BK_3AVG
+			      ,SUM(p."BFP")/3.000	BFP_3AVG
+			      ,SUM(p."GF")/3.000	GF_3AVG
+			      ,SUM(p."R")/3.000		R_3AVG
+			      ,SUM(p."SH")/3.000	SH_3AVG
+			      ,SUM(p."SF")/3.000	SF_3AVG
+			      ,SUM(p."GIDP")/3.000	GIDP_3AVG
+			      
+			FROM(
+		             SELECT "Pitching"."yearID"   "yearID", 
+			       "W"
+			      ,"L"	
+			      ,"G"
+			      ,"GS"
+			      ,"CG"
+			      ,"SHO"
+			      ,"SV"
+			      ,"IPouts"
+			      ,"H"
+			      ,"ER"
+			      ,"HR"
+			      ,"BB"
+			      ,"SO"
+			      ,"BAOpp"
+			      ,"ERA"
+			      ,"IBB"
+			      ,"WP"
+			      ,"HBP"
+			      ,"BK"
+			      ,"BFP"
+			      ,"GF"
+			      ,"R"
+			      ,"SH"
+			      ,"SF"
+			      ,"GIDP"
+				    FROM "Master"
+				    JOIN "Pitching"
+				      ON "Master"."playerID" = "Pitching"."playerID"
+				    WHERE 
+					    "Master"."nameFirst" = '%s'
+					     AND "Master"."nameLast" = '%s'
+				    ORDER BY
+					    "Pitching"."yearID" DESC
+				    LIMIT 3
+                        ) AS p
+              """ % (player_first_name, player_last_name)
+
+    elif playerID != None and teamID == None:
+        sql = """
+                SELECT SUM(p."W")/3.000		W_3AVG
+			          ,SUM(p."L")/3.000		L_3AVG
+			          ,SUM(p."G")/3.000		G_3AVG
+			          ,SUM(p."GS")/3.000	GS_3AVG
+			          ,SUM(p."CG")/3.000	"CG_3AVG"
+			          ,SUM(p."SHO")/3.000	"SHO_3AVG"
+			          ,SUM(p."SV")/3.000	SV_3AVG
+			          ,SUM(p."IPouts")/3.000	IPOUTS_3AVG
+			          ,SUM(p."H")/3.000		H_3AVG
+			          ,SUM(p."ER")/3.000	ER_3AVG
+			          ,SUM(p."HR")/3.000	HR_3AVG
+			          ,SUM(p."BB")/3.000	BB_3AVG
+			          ,SUM(p."SO")/3.000	SO_3AVG
+			          ,SUM(p."BAOpp")/3.000	BAOPP_3AVG
+			          ,SUM(p."ERA")/3.000	ERA_3AVG
+			          ,SUM(p."IBB")/3.000	IBB_3AVG
+			          ,SUM(p."WP")/3.000	WP_3AVG
+			          ,SUM(p."HBP")/3.000	HBP_3AVG
+			          ,SUM(p."BK")/3.000	BK_3AVG
+			          ,SUM(p."BFP")/3.000	BFP_3AVG
+			          ,SUM(p."GF")/3.000	GF_3AVG
+			          ,SUM(p."R")/3.000		R_3AVG
+			          ,SUM(p."SH")/3.000	SH_3AVG
+			          ,SUM(p."SF")/3.000	SF_3AVG
+			          ,SUM(p."GIDP")/3.000	GIDP_3AVG
+			      
+			    FROM(
+		                 SELECT "Pitching"."yearID"   "yearID", 
+			           "W"
+			          ,"L"	
+			          ,"G"
+			          ,"GS"
+			          ,"CG"
+			          ,"SHO"
+			          ,"SV"
+			          ,"IPouts"
+			          ,"H"
+			          ,"ER"
+			          ,"HR"
+			          ,"BB"
+			          ,"SO"
+			          ,"BAOpp"
+			          ,"ERA"
+			          ,"IBB"
+			          ,"WP"
+			          ,"HBP"
+			          ,"BK"
+			          ,"BFP"
+			          ,"GF"
+			          ,"R"
+			          ,"SH"
+			          ,"SF"
+			          ,"GIDP"
+				        FROM "Master"
+				        JOIN "Pitching"
+				          ON "Master"."playerID" = "Pitching"."playerID"
+				        WHERE 
+					        "Master"."nameFirst" = '%s'
+					         AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+				        ORDER BY
+					        "Pitching"."yearID" DESC
+				        LIMIT 3
+                            ) AS p  
+              """ % (player_first_name, player_last_name, playerID)
+
+    elif playerID != None and teamID != None:
+        sql = """
+                SELECT SUM(p."W")/3.000		W_3AVG
+			          ,SUM(p."L")/3.000		L_3AVG
+			          ,SUM(p."G")/3.000		G_3AVG
+			          ,SUM(p."GS")/3.000	GS_3AVG
+			          ,SUM(p."CG")/3.000	"CG_3AVG"
+			          ,SUM(p."SHO")/3.000	"SHO_3AVG"
+			          ,SUM(p."SV")/3.000	SV_3AVG
+			          ,SUM(p."IPouts")/3.000	IPOUTS_3AVG
+			          ,SUM(p."H")/3.000		H_3AVG
+			          ,SUM(p."ER")/3.000	ER_3AVG
+			          ,SUM(p."HR")/3.000	HR_3AVG
+			          ,SUM(p."BB")/3.000	BB_3AVG
+			          ,SUM(p."SO")/3.000	SO_3AVG
+			          ,SUM(p."BAOpp")/3.000	BAOPP_3AVG
+			          ,SUM(p."ERA")/3.000	ERA_3AVG
+			          ,SUM(p."IBB")/3.000	IBB_3AVG
+			          ,SUM(p."WP")/3.000	WP_3AVG
+			          ,SUM(p."HBP")/3.000	HBP_3AVG
+			          ,SUM(p."BK")/3.000	BK_3AVG
+			          ,SUM(p."BFP")/3.000	BFP_3AVG
+			          ,SUM(p."GF")/3.000	GF_3AVG
+			          ,SUM(p."R")/3.000		R_3AVG
+			          ,SUM(p."SH")/3.000	SH_3AVG
+			          ,SUM(p."SF")/3.000	SF_3AVG
+			          ,SUM(p."GIDP")/3.000	GIDP_3AVG
+			      
+			    FROM(
+		                 SELECT "Pitching"."yearID"   "yearID", 
+			           "W"
+			          ,"L"	
+			          ,"G"
+			          ,"GS"
+			          ,"CG"
+			          ,"SHO"
+			          ,"SV"
+			          ,"IPouts"
+			          ,"H"
+			          ,"ER"
+			          ,"HR"
+			          ,"BB"
+			          ,"SO"
+			          ,"BAOpp"
+			          ,"ERA"
+			          ,"IBB"
+			          ,"WP"
+			          ,"HBP"
+			          ,"BK"
+			          ,"BFP"
+			          ,"GF"
+			          ,"R"
+			          ,"SH"
+			          ,"SF"
+			          ,"GIDP"
+				        FROM "Master"
+				        JOIN "Pitching"
+				          ON "Master"."playerID" = "Pitching"."playerID"
+				        WHERE 
+					        "Master"."nameFirst" = '%s'
+					         AND "Master"."nameLast" = '%s'
+                             AND "Master"."playerID" = '%s'
+                             AND "Pitching"."teamID" = '%s'
+				        ORDER BY
+					        "Pitching"."yearID" DESC
+				        LIMIT 3
+                            ) AS p  
+              """ % (player_first_name, player_last_name, playerID, teamID)
+    return sql
 
 def sqlMLBAverageBattingLastThreeYears():
     sql = """
@@ -543,6 +748,7 @@ def sqlMLBAverageBattingLastThreeYears():
                 ) as N
           """
     return sql
+
 
 def sqlMLBAveragePitchingLastThreeYears():
     sql = """
@@ -622,3 +828,4 @@ def sqlMLBAveragePitchingLastThreeYears():
                 LIMIT 3
                 ) as N
           """
+    return sql
