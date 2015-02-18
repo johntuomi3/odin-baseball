@@ -6,7 +6,7 @@ import numpy as np
 from sqlalchemy import create_engine
 
 
-engine = create_engine("postgresql://odin:admin@localhost/odin_app")
+engine = create_engine("postgresql://odin:admin@localhost/thor_app")
 start_time = datetime.now()
 
 
@@ -38,39 +38,39 @@ def createSuperUser(postgres_superuser, postgres_password):
                        IF NOT EXISTS (
                           SELECT *
                           FROM   pg_catalog.pg_user
-                          WHERE  usename = 'odin') THEN
+                          WHERE  usename = 'thor') THEN
 
-                          CREATE ROLE odin WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'admin';
+                          CREATE ROLE thor WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'admin';
                        END IF;
                     END
                     $body$;
                 """)
     cnxn.commit()
-    cur.execute("ALTER USER odin WITH PASSWORD 'admin';")
+    cur.execute("ALTER USER thor WITH PASSWORD 'admin';")
     cnxn.commit()
-    cur.execute("ALTER ROLE odin CREATEDB CREATEROLE REPLICATION;")
+    cur.execute("ALTER ROLE thor CREATEDB CREATEROLE REPLICATION;")
     cnxn.commit()  
     cnxn.close()
 
 
 def createDatabase():
     print("******** DATABASE CREATION ********")
-    cnxn2 = psycopg2.connect(database='postgres',user="odin",host="localhost",password="admin")
+    cnxn2 = psycopg2.connect(database='postgres',user="thor",host="localhost",password="admin")
     cnxn2.autocommit = True
     cur2 = cnxn2.cursor()  
-    odin_existance = cur2.execute("""
+    thor_existance = cur2.execute("""
                                     SELECT datname
                                     FROM   pg_catalog.pg_database
-                                    WHERE  datname = 'odin_app'                    
+                                    WHERE  datname = 'thor_app'                    
                                   """)    
-    print("Odin App Exists?", odin_existance)
-    if odin_existance == None:
+    print("Thor App Exists?", thor_existance)
+    if thor_existance == None:
         cur2.execute("""
-                     CREATE DATABASE odin_app OWNER odin TEMPLATE template0;                          
+                     CREATE DATABASE thor_app OWNER odin TEMPLATE template0;                          
                      """)   
-        print("Odin Database Created Successfully") 
+        print("Thor Database Created Successfully") 
     else:
-        print("Odin Database Already Exists")
+        print("Thor Database Already Exists")
     cnxn2.close()
 
 
@@ -95,7 +95,7 @@ def parseCSV(csv_file_list):
 
 
 def fixTeamTable():
-    cnxn = psycopg2.connect(database='odin_app',user="odin",host="localhost",password="admin")
+    cnxn = psycopg2.connect(database='thor_app',user="thor",host="localhost",password="admin")
     cur = cnxn.cursor()
     cur.execute("""
                    ALTER TABLE "Teams"
