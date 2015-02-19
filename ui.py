@@ -1,17 +1,8 @@
 from bottle import Bottle, route, run, template, static_file
 from utility import *
 from database import *
-app = Bottle()
 
- 
-#TODO: Trim Team Roster Queries
-#TODO: Format Player Page better
-#TODO: Start Experimenting with Projections ex. Trend Last 3 Years League Average WAR vs Player WAR
-#TODO: Change Last 3 Years to be a provided value ex. Last 10 years
-#TODO: Implement Team Specific Views
-#TODO: Add Salary Specific Views
-#TODO: Add Player Search Functionality
-#TODO: Work on Nav Bar
+app = Bottle()
 
 # Routes
 @app.route('/')
@@ -176,7 +167,6 @@ def player(player_name, playerID):
         widget_list.append(no_data_card)
     return template('view/player_page', widgets=widget_list)
     
-
 
 @app.route('/player/<player_name>/<playerID>/career')
 @app.route('/player/<player_name>/<playerID>/career/')
@@ -487,8 +477,5 @@ def gradePlayer(mlb_hitting_df, mlb_pitching_df, player_hitting_df=None, player_
         if pbat.loc[0,"2B_3AVG"] <= (mlbat.loc[0,"mlb_3avg_2b"]) - ((mlbat.loc[0,"mlb_3avg_2b"]) * 0.690):        
             print("2B: F")
 
-        
-   
-    
         
 run(app,debug=True,host='0.0.0.0',port='8080',server="cherrypy")

@@ -103,7 +103,17 @@ def fixTeamTable():
                 """)
     cnxn.commit()
     cnxn.close()
-                  
+
+
+def fixwOBATable():
+    cnxn = psycopg2.connect(database='thor_app',user="thor",host="localhost",password="admin")
+    cur = cnxn.cursor()
+    cur.execute("""
+                   ALTER TABLE "wOBAScale"
+                   ALTER COLUMN "Season" TYPE timestamp without time zone; 
+                """)
+    cnxn.commit()
+    cnxn.close()          
         
 
 def getSQLTable(table):
